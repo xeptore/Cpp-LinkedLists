@@ -1,37 +1,17 @@
 /*
- * Created by Xeptore on 11/20/2017.
- * Copyright (c) 2017. All rights reserved.
+ * Created by Xeptore on 11/21/2017.
+ * Copyright (c) 2017.
  */
 
 #include "SinglyLinkedList.h"
 
 SinglyLinkedList::SinglyLinkedList(int value) {
-    if (this->first == nullptr) {
-        this->first = this;
-    }
     this->value = value;
-    // Sets next node to nullptr by default
     this->next = nullptr;
 }
 
-void SinglyLinkedList::setValue(int value) {
-    this->value = value;
-}
-
-int SinglyLinkedList::getValue() {
-    return this->value;
-}
-
-void SinglyLinkedList::setNextNode(SinglyLinkedList * node) {
-    this->next = node;
-}
-
-SinglyLinkedList *SinglyLinkedList::getNextNode() {
-    return this->next;
-}
-
-void SinglyLinkedList::push(int newNodeValue) {
-    SinglyLinkedList *iterator = this->first;
+void push(SinglyLinkedList *node, int newNodeValue) {
+    SinglyLinkedList *iterator = node;
     while (iterator->next != nullptr) {
         iterator = iterator->next;
     }
@@ -39,8 +19,8 @@ void SinglyLinkedList::push(int newNodeValue) {
     iterator->next = newNode;
 }
 
-bool SinglyLinkedList::addNext(int targetNodeValue, int value) {
-    SinglyLinkedList *iterator = this->first;
+bool addNext(SinglyLinkedList *node, int targetNodeValue, int value) {
+    SinglyLinkedList *iterator = node;
     while (iterator->value != targetNodeValue && iterator->next != nullptr) {
         iterator = iterator->next;
     }
@@ -53,12 +33,12 @@ bool SinglyLinkedList::addNext(int targetNodeValue, int value) {
     return true;
 }
 
-bool SinglyLinkedList::addPrevious(int targetNodeValue, int value) {
-    SinglyLinkedList *iterator = this->first;
+bool addPrevious(SinglyLinkedList *node, int targetNodeValue, int value) {
+    SinglyLinkedList *iterator = node;
     auto *newNode = new SinglyLinkedList(value);
     if (iterator->value == targetNodeValue) {
         newNode->next = iterator;
-        this->first = newNode;
+        node = newNode;
         return true;
     }
     while (iterator->next->value != targetNodeValue && iterator->next != nullptr) {
@@ -72,11 +52,11 @@ bool SinglyLinkedList::addPrevious(int targetNodeValue, int value) {
     return true;
 }
 
-int SinglyLinkedList::pop() {
-    SinglyLinkedList *iterator = this->first;
+int pop(SinglyLinkedList *node) {
+    SinglyLinkedList *iterator = node;
     if (iterator->next == nullptr) {
         int returnValue = iterator->value;
-        this->first = nullptr;
+        node = nullptr;
         return returnValue;
     }
     while (iterator->next->next != nullptr) {
@@ -87,10 +67,10 @@ int SinglyLinkedList::pop() {
     return returnValue;
 }
 
-bool SinglyLinkedList::remove(int targetNodeValue) {
-    SinglyLinkedList *iterator = this->first;
+bool remove(SinglyLinkedList *node, int targetNodeValue) {
+    SinglyLinkedList *iterator = node;
     if (iterator->value == targetNodeValue) {
-        this->first = iterator->next;
+        node = iterator->next;
         iterator = nullptr;
         return true;
     }
@@ -104,24 +84,24 @@ bool SinglyLinkedList::remove(int targetNodeValue) {
     return true;
 }
 
-bool SinglyLinkedList::removeNext(int targetNodeValue)  {
-    SinglyLinkedList *iterator = this->first;
+bool removeNext(SinglyLinkedList *node, int targetNodeValue)  {
+    SinglyLinkedList *iterator = node;
     if (iterator->value == targetNodeValue) {
-        this->first = this->first->next->next;
+        node->next = node->next->next;
         return true;
     }
     while (iterator->next->value != targetNodeValue && iterator->next->next != nullptr) {
         iterator = iterator->next;
     }
-    if (iterator->next->next == nullptr) {
+    if (iterator->next->next== nullptr) {
         return false;
     }
     iterator->next->next = iterator->next->next->next;
     return true;
 }
 
-bool SinglyLinkedList::removePrevious(int targetNodeValue) {
-    SinglyLinkedList *iterator = this->first;
+bool removePrevious(SinglyLinkedList *node, int targetNodeValue) {
+    SinglyLinkedList *iterator = node;
     if (iterator->value == targetNodeValue) {
         return false;
     }

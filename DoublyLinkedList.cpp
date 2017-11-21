@@ -1,45 +1,18 @@
 /*
- * Created by Xeptore on 11/21/17.
+ * Created by Xeptore on 11/21/2017.
  * Copyright (c) 2017.
  */
 
 #include "DoublyLinkedList.h"
 
 DoublyLinkedList::DoublyLinkedList(int value) {
-    if (this->first == nullptr) {
-        this->first = this;
-    }
     this->value = value;
     this->next = nullptr;
     this->prev = nullptr;
 }
 
-void DoublyLinkedList::setValue(int value) {
-    this->value = value;
-}
-
-int DoublyLinkedList::getValue() {
-    return this->value;
-}
-
-void DoublyLinkedList::setNextNode(DoublyLinkedList *node) {
-    this->next = node;
-}
-
-DoublyLinkedList *DoublyLinkedList::getNextNode() {
-    return this->next;
-}
-
-void DoublyLinkedList::setPrevNode(DoublyLinkedList *node) {
-    this->prev = node;
-}
-
-DoublyLinkedList *DoublyLinkedList::getPrevNode() {
-    return this->prev;
-}
-
-void DoublyLinkedList::push(int newNodeValue) {
-    DoublyLinkedList *iterator = this->first;
+void push(DoublyLinkedList *node, int newNodeValue) {
+    DoublyLinkedList *iterator = node;
     while (iterator->next != nullptr) {
         iterator = iterator->next;
     }
@@ -47,8 +20,8 @@ void DoublyLinkedList::push(int newNodeValue) {
     iterator->next = newNode;
 }
 
-bool DoublyLinkedList::addNext(int targetNodeValue, int newNodeValue) {
-    DoublyLinkedList *iterator = this->first;
+bool addNext(DoublyLinkedList *node, int targetNodeValue, int newNodeValue) {
+    DoublyLinkedList *iterator = node;
     while (iterator->value != targetNodeValue && iterator->next != nullptr) {
         iterator = iterator->next;
     }
@@ -57,17 +30,19 @@ bool DoublyLinkedList::addNext(int targetNodeValue, int newNodeValue) {
     }
     auto *newNode = new DoublyLinkedList(newNodeValue);
     newNode->next = iterator->next;
+    newNode->next->prev = newNode;
     iterator->next = newNode;
+    newNode->prev = iterator;
     return true;
 }
 
-bool DoublyLinkedList::addPrevious(int targetNodeValue, int newNodeValue) {
-    DoublyLinkedList *iterator = this->first;
+bool addPrevious(DoublyLinkedList *node, int targetNodeValue, int newNodeValue) {
+    DoublyLinkedList *iterator = node;
     auto *newNode = new DoublyLinkedList(newNodeValue);
     if (iterator->value == targetNodeValue) {
-        newNode->next = iterator;
-        iterator->prev = newNode;
-        this->first = newNode;
+        newNode->next = node;
+        node->prev = newNode;
+        node = newNode;
         return true;
     }
     while (iterator->next->value != targetNodeValue && iterator->next != nullptr) {
@@ -83,11 +58,11 @@ bool DoublyLinkedList::addPrevious(int targetNodeValue, int newNodeValue) {
     return true;
 }
 
-int DoublyLinkedList::pop() {
-    DoublyLinkedList *iterator = this->first;
+int pop(DoublyLinkedList *node) {
+    DoublyLinkedList *iterator = node;
     if (iterator->next == nullptr) {
         int returnValue = iterator->value;
-        this->first = nullptr;
+        node = nullptr;
         return returnValue;
     }
     while (iterator->next->next != nullptr) {
@@ -98,11 +73,11 @@ int DoublyLinkedList::pop() {
     return returnValue;
 }
 
-bool DoublyLinkedList::remove(int targetNodeValue) {
-    DoublyLinkedList *iterator = this->first;
+bool remove(DoublyLinkedList *node, int targetNodeValue) {
+    DoublyLinkedList *iterator = node;
     if (iterator->value == targetNodeValue) {
-        this->first = iterator->next;
-        this->first->prev = nullptr;
+        node = iterator->next;
+        node->prev = nullptr;
         return true;
     }
     while (iterator->next->value != targetNodeValue && iterator->next->next != nullptr) {
@@ -115,26 +90,28 @@ bool DoublyLinkedList::remove(int targetNodeValue) {
     return true;
 }
 
-bool DoublyLinkedList::removeNext(int targetNodeValue) {
-    DoublyLinkedList *iterator = this->first;
+bool removeNext(DoublyLinkedList *node, int targetNodeValue) {
+    DoublyLinkedList *iterator = node;
     if (iterator->value == targetNodeValue) {
-        this->first = this->first->next->next;
-        this->first = nullptr;
+        if (iterator->next == nullptr) {
+            return true;
+        }
+        node = iterator->next->next;
         return true;
     }
     while (iterator->next->value != targetNodeValue && iterator->next->next != nullptr) {
         iterator = iterator->next;
     }
     if (iterator->next->next == nullptr) {
-        return false;
+        return true;
     }
     iterator->next->next = iterator->next->next->next;
     iterator->next->next->prev = iterator->next;
     return true;
 }
 
-bool DoublyLinkedList::removePrevious(int targetNodeValue) {
-    DoublyLinkedList *iterator = this->first;
+bool removePrevious(DoublyLinkedList *node, int targetNodeValue) {
+    DoublyLinkedList *iterator = node;
     if (iterator->value == targetNodeValue) {
         return false;
     }
