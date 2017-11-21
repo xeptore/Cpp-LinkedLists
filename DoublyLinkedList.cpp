@@ -1,63 +1,72 @@
 /*
- * Created by Xeptore on 11/20/2017.
- * Copyright (c) 2017. All rights reserved.
+ * Created by Xeptore on 11/21/17.
+ * Copyright (c) 2017.
  */
 
-#include "SinglyLinkedList.h"
+#include "DoublyLinkedList.h"
 
-SinglyLinkedList::SinglyLinkedList(int value) {
+DoublyLinkedList::DoublyLinkedList(int value) {
     if (this->first == nullptr) {
         this->first = this;
     }
     this->value = value;
-    // Sets next node to nullptr by default
     this->next = nullptr;
+    this->prev = nullptr;
 }
 
-void SinglyLinkedList::setValue(int value) {
+void DoublyLinkedList::setValue(int value) {
     this->value = value;
 }
 
-int SinglyLinkedList::getValue() {
+int DoublyLinkedList::getValue() {
     return this->value;
 }
 
-void SinglyLinkedList::setNextNode(SinglyLinkedList * node) {
+void DoublyLinkedList::setNextNode(DoublyLinkedList *node) {
     this->next = node;
 }
 
-SinglyLinkedList *SinglyLinkedList::getNextNode() {
+DoublyLinkedList *DoublyLinkedList::getNextNode() {
     return this->next;
 }
 
-void SinglyLinkedList::push(int newNodeValue) {
-    SinglyLinkedList *iterator = this->first;
+void DoublyLinkedList::setPrevNode(DoublyLinkedList *node) {
+    this->prev = node;
+}
+
+DoublyLinkedList *DoublyLinkedList::getPrevNode() {
+    return this->prev;
+}
+
+void DoublyLinkedList::push(int newNodeValue) {
+    DoublyLinkedList *iterator = this->first;
     while (iterator->next != nullptr) {
         iterator = iterator->next;
     }
-    auto *newNode = new SinglyLinkedList(newNodeValue);
+    auto *newNode = new DoublyLinkedList(newNodeValue);
     iterator->next = newNode;
 }
 
-bool SinglyLinkedList::addNext(int targetNodeValue, int value) {
-    SinglyLinkedList *iterator = this->first;
+bool DoublyLinkedList::addNext(int targetNodeValue, int newNodeValue) {
+    DoublyLinkedList *iterator = this->first;
     while (iterator->value != targetNodeValue && iterator->next != nullptr) {
         iterator = iterator->next;
     }
     if (iterator->next == nullptr && iterator->value != targetNodeValue) {
         return false;
     }
-    auto *newNode = new SinglyLinkedList(value);
+    auto *newNode = new DoublyLinkedList(newNodeValue);
     newNode->next = iterator->next;
     iterator->next = newNode;
     return true;
 }
 
-bool SinglyLinkedList::addPrevious(int targetNodeValue, int value) {
-    SinglyLinkedList *iterator = this->first;
-    auto *newNode = new SinglyLinkedList(value);
+bool DoublyLinkedList::addPrevious(int targetNodeValue, int newNodeValue) {
+    DoublyLinkedList *iterator = this->first;
+    auto *newNode = new DoublyLinkedList(newNodeValue);
     if (iterator->value == targetNodeValue) {
         newNode->next = iterator;
+        iterator->prev = newNode;
         this->first = newNode;
         return true;
     }
@@ -69,11 +78,13 @@ bool SinglyLinkedList::addPrevious(int targetNodeValue, int value) {
     }
     newNode->next = iterator->next;
     iterator->next = newNode;
+    newNode->next->prev = newNode;
+    newNode->prev = iterator;
     return true;
 }
 
-int SinglyLinkedList::pop() {
-    SinglyLinkedList *iterator = this->first;
+int DoublyLinkedList::pop() {
+    DoublyLinkedList *iterator = this->first;
     if (iterator->next == nullptr) {
         int returnValue = iterator->value;
         this->first = nullptr;
@@ -87,11 +98,11 @@ int SinglyLinkedList::pop() {
     return returnValue;
 }
 
-bool SinglyLinkedList::remove(int targetNodeValue) {
-    SinglyLinkedList *iterator = this->first;
+bool DoublyLinkedList::remove(int targetNodeValue) {
+    DoublyLinkedList *iterator = this->first;
     if (iterator->value == targetNodeValue) {
         this->first = iterator->next;
-        iterator = nullptr;
+        this->first->prev = nullptr;
         return true;
     }
     while (iterator->next->value != targetNodeValue && iterator->next->next != nullptr) {
@@ -104,10 +115,11 @@ bool SinglyLinkedList::remove(int targetNodeValue) {
     return true;
 }
 
-bool SinglyLinkedList::removeNext(int targetNodeValue)  {
-    SinglyLinkedList *iterator = this->first;
+bool DoublyLinkedList::removeNext(int targetNodeValue) {
+    DoublyLinkedList *iterator = this->first;
     if (iterator->value == targetNodeValue) {
         this->first = this->first->next->next;
+        this->first = nullptr;
         return true;
     }
     while (iterator->next->value != targetNodeValue && iterator->next->next != nullptr) {
@@ -117,11 +129,12 @@ bool SinglyLinkedList::removeNext(int targetNodeValue)  {
         return false;
     }
     iterator->next->next = iterator->next->next->next;
+    iterator->next->next->prev = iterator->next;
     return true;
 }
 
-bool SinglyLinkedList::removePrevious(int targetNodeValue) {
-    SinglyLinkedList *iterator = this->first;
+bool DoublyLinkedList::removePrevious(int targetNodeValue) {
+    DoublyLinkedList *iterator = this->first;
     if (iterator->value == targetNodeValue) {
         return false;
     }
@@ -132,5 +145,6 @@ bool SinglyLinkedList::removePrevious(int targetNodeValue) {
         return false;
     }
     iterator->next = iterator->next->next;
+    iterator->next->prev = iterator;
     return true;
 }
