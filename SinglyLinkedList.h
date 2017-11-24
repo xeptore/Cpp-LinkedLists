@@ -6,11 +6,15 @@
 #ifndef SinglyLinkedList_H
 #define SinglyLinkedList_H
 
+// Singly Linked List main calss
 class SinglyLinkedList {
 public:
+    // Value os each node
     int value;
+    // Pointer to next node
     SinglyLinkedList *next;
 
+    // Constructor
     explicit SinglyLinkedList(int value);
 };
 
